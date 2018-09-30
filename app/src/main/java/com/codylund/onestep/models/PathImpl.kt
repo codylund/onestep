@@ -1,4 +1,4 @@
-package com.codylund.onestep
+package com.codylund.onestep.models
 
 import android.arch.persistence.room.ColumnInfo
 import android.arch.persistence.room.Entity
@@ -14,7 +14,7 @@ class PathImpl(
     @ColumnInfo(name = "firstStepId") var mFirstStepId: Long = 0
     @ColumnInfo(name = "status") var mStatus: PathStatus = PathStatus.NEW
 
-    override fun getIdentifier(): Any {
+    override fun getIdentifier(): Long {
         return mPathId
     }
 

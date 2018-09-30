@@ -41,7 +41,7 @@
             android:orientation="vertical">
 
             <TextView
-                android:id="@+id/what"
+                android:id="@+id/whatView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="What?"
@@ -49,21 +49,21 @@
                 android:textSize="18sp" />
 
             <TextView
-                android:id="@+id/when"
+                android:id="@+id/whenView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:paddingLeft="8dp"
                 android:text="When?" />
 
             <TextView
-                android:id="@+id/where"
+                android:id="@+id/whereView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:paddingLeft="8dp"
                 android:text="Where?" />
 
             <TextView
-                android:id="@+id/why"
+                android:id="@+id/whyView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:paddingLeft="8dp"

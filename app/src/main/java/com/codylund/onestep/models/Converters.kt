@@ -1,6 +1,8 @@
-package com.codylund.onestep
+package com.codylund.onestep.models
 
 import android.arch.persistence.room.TypeConverter
+import com.codylund.onestep.models.PathStatus
+import com.codylund.onestep.models.StepStatus
 
 class Converters {
     @TypeConverter

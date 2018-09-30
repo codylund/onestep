@@ -1,4 +1,4 @@
-package com.codylund.onestep
+package com.codylund.onestep.models
 
 import android.arch.persistence.room.Database
 import android.arch.persistence.room.Room
@@ -6,21 +6,21 @@ import android.arch.persistence.room.RoomDatabase
 import android.arch.persistence.room.TypeConverters
 import android.content.Context
 
-@Database(entities = arrayOf(PathImpl::class), version = 1)
+@Database(entities = arrayOf(StepImpl::class), version = 1)
 @TypeConverters(Converters::class)
-abstract class PathDataBase : RoomDatabase() {
+abstract class StepDataBase : RoomDatabase() {
 
-    abstract fun pathDataDao(): PathImplDao
+    abstract fun stepDataDao(): StepImplDao
 
     companion object {
 
-        private var INSTANCE: PathDataBase? = null
+        private var INSTANCE: StepDataBase? = null
 
-        fun getInstance(context: Context): PathDataBase {
+        fun getInstance(context: Context): StepDataBase? {
             if (INSTANCE == null) {
                 synchronized(StepDataBase::class) {
                     INSTANCE = Room.databaseBuilder(context,
-                            PathDataBase::class.java, "paths.db").build()
+                            StepDataBase::class.java, "steps.db").build()
                 }
             }
             return INSTANCE!!

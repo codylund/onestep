@@ -1,6 +1,7 @@
-package com.codylund.onestep
+package com.codylund.onestep.models
 
 import android.arch.persistence.room.*
+import com.codylund.onestep.models.PathImpl
 import io.reactivex.Flowable
 
 @Dao

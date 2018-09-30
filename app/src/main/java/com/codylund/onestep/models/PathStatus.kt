@@ -1,4 +1,4 @@
-package com.codylund.onestep
+package com.codylund.onestep.models
 
 enum class PathStatus {
     NEW,

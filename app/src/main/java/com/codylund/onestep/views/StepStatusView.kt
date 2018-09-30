@@ -1,7 +1,9 @@
-package com.codylund.onestep
+package com.codylund.onestep.views
 
 import android.content.Context
 import android.widget.ImageView
+import com.codylund.onestep.R
+import com.codylund.onestep.models.StepStatus
 
 class StepStatusView(context: Context) : ImageView(context) {
 

@@ -1,6 +1,7 @@
-package com.codylund.onestep
+package com.codylund.onestep.models
 
 interface Step {
+    fun getIdentifier() : Long
     fun getWho() : String?
     fun getWhat() : String?
     fun getWhen() : String?

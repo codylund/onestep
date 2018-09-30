@@ -1,7 +1,7 @@
-package com.codylund.onestep
+package com.codylund.onestep.models
 
 interface Path {
-    fun getIdentifier(): Any
+    fun getIdentifier(): Long
     fun getPathName(): String
     fun getPathDescription(): String?
     fun getFirstStepId(): Long

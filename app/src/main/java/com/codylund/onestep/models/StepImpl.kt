@@ -1,4 +1,4 @@
-package com.codylund.onestep
+package com.codylund.onestep.models
 
 import android.arch.persistence.room.ColumnInfo
 import android.arch.persistence.room.Entity
@@ -15,9 +15,10 @@ data class StepImpl (
         @ColumnInfo(name = "how") var mHow: String?
 ) : Step {
 
-    @PrimaryKey(autoGenerate = true) var mStepId: Int = 0
-    @ColumnInfo(name = "lastStep") var mLastStepId: Int? = null
-    @ColumnInfo(name = "nextStep") var mNextStepId: Int? = null
+    @PrimaryKey(autoGenerate = true) var mStepId: Long = 0
+    @ColumnInfo(name = "pathId") var mPathId: Long = 0
+    @ColumnInfo(name = "lastStep") var mLastStepId: Long? = null
+    @ColumnInfo(name = "nextStep") var mNextStepId: Long? = null
     @ColumnInfo(name = "status") var mStatus: StepStatus = StepStatus.NEW
 
     @Ignore
@@ -56,6 +57,11 @@ data class StepImpl (
     }
 
     @Ignore
+    override fun getIdentifier(): Long {
+        return mStepId
+    }
+
+    @Ignore
     override fun getWho(): String? {
         return mWho
     }
@@ -88,5 +94,24 @@ data class StepImpl (
     @Ignore
     override fun getStatus(): StepStatus {
         return mStatus
+    }
+
+    override fun equals(other: Any?) : Boolean {
+        // Check the type
+        if (other !is StepImpl)
+            return false
+
+        // Check all the members
+        return !(mStepId != other.mStepId
+            || mPathId != other.mPathId
+            || mLastStepId != other.mLastStepId
+            || mNextStepId != other.mNextStepId
+            || mStatus != other.mStatus
+            || mWho != other.mWho
+            || mWhat != other.mWhat
+            || mWhy != other.mWhy
+            || mWhen != other.mWhen
+            || mWhere != other.mWhere
+            || mHow != other.mHow)
     }
 }
