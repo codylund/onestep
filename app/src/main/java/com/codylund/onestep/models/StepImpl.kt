@@ -4,6 +4,7 @@ import android.arch.persistence.room.ColumnInfo
 import android.arch.persistence.room.Entity
 import android.arch.persistence.room.Ignore
 import android.arch.persistence.room.PrimaryKey
+import com.codylund.onestep.views.adapters.Differ
 
 @Entity(tableName = "stepData")
 data class StepImpl (
@@ -16,7 +17,7 @@ data class StepImpl (
 ) : Step {
 
     @PrimaryKey(autoGenerate = true) var mStepId: Long = 0
-    @ColumnInfo(name = "pathId") var mPathId: Long = 0
+    @ColumnInfo(name = "pathId") var mPathId: Long? = null
     @ColumnInfo(name = "lastStep") var mLastStepId: Long? = null
     @ColumnInfo(name = "nextStep") var mNextStepId: Long? = null
     @ColumnInfo(name = "status") var mStatus: StepStatus = StepStatus.NEW
@@ -113,5 +114,11 @@ data class StepImpl (
             || mWhen != other.mWhen
             || mWhere != other.mWhere
             || mHow != other.mHow)
+    }
+
+    override fun sameAs(other: Differ.Diffable): Boolean {
+        if (other !is StepImpl)
+            return false
+        return getIdentifier() == other.getIdentifier()
     }
 }

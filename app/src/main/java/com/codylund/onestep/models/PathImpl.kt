@@ -4,12 +4,14 @@ import android.arch.persistence.room.ColumnInfo
 import android.arch.persistence.room.Entity
 import android.arch.persistence.room.Ignore
 import android.arch.persistence.room.PrimaryKey
+import com.codylund.onestep.views.adapters.Differ
 
 @Entity(tableName = "pathData")
 class PathImpl(
         @ColumnInfo(name = "name") var mName: String,
         @ColumnInfo(name = "description") var mDescription: String?
 ) : Path {
+
     @PrimaryKey(autoGenerate = true) var mPathId: Long = 0
     @ColumnInfo(name = "firstStepId") var mFirstStepId: Long = 0
     @ColumnInfo(name = "status") var mStatus: PathStatus = PathStatus.NEW
@@ -59,5 +61,20 @@ class PathImpl(
 
     override fun delete() {
 
+    }
+
+    override fun sameAs(other: Differ.Diffable): Boolean {
+        if (other !is PathImpl)
+            return false
+        return getIdentifier() == other.getIdentifier()
+    }
+
+    override fun equals(other: Any?): Boolean {
+        if (other !is PathImpl)
+            return false
+        return (getFirstStepId() != other.getFirstStepId())
+                || (getPathDescription() != other.getPathDescription())
+                || (getPathName() != other.getPathName())
+                || (getStatus() != other.getStatus())
     }
 }

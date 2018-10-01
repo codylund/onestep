@@ -1,6 +1,8 @@
 package com.codylund.onestep.models
 
-interface Step {
+import com.codylund.onestep.views.adapters.Differ
+
+interface Step : Differ.Diffable {
     fun getIdentifier() : Long
     fun getWho() : String?
     fun getWhat() : String?

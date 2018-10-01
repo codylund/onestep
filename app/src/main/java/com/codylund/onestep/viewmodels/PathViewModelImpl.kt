@@ -6,7 +6,7 @@ import io.reactivex.*
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 
-class PathViewModelImpl(context: Context) : PathViewModel {
+class PathViewModelImpl(val context: Context) : PathViewModel {
 
     val mStepDataBase = StepDataBase.getInstance(context)!!.stepDataDao()
     val mPathDataBase = PathDataBase.getInstance(context)!!.pathDataDao()
@@ -40,13 +40,26 @@ class PathViewModelImpl(context: Context) : PathViewModel {
         }.subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread())
     }
 
-    fun makeStep(who: String, what: String, wen: String, where: String, why: String, how: String)
+    fun makeStep(pathId: Long, who: String, what: String, wen: String, where: String, why: String, how: String)
             : Completable {
 
-        var step = StepImpl(who, what, wen, where, why, how)
-
         return Completable.create {
+            var step = StepImpl(who, what, wen, where, why, how)
+            step.mPathId = pathId
+
+            // Get the current last step in the path
+            val lastStep = mStepDataBase.getLastStep(pathId)
+
+            // Update the new step with the last step's id
+            step.mLastStepId = lastStep?.mStepId
             val id = mStepDataBase.insert(step)
+
+            // Update the previous step
+            if (lastStep != null) {
+                lastStep.mNextStepId = id
+                mStepDataBase.update(lastStep)
+            }
+
             it.onComplete()
         }.subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread())
     }

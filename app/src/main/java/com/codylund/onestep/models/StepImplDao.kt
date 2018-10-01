@@ -11,11 +11,14 @@ interface StepImplDao {
     @Query("SELECT * from stepData where pathId = :pathId")
     fun getStepsForPath(pathId: Long): Flowable<List<StepImpl>>
 
+    @Query("SELECT * from stepData where pathId = :pathId AND nextStep = null")
+    fun getLastStep(pathId: Long): StepImpl
+
     @Query("SELECT * from stepData where mStepId = :id limit 1")
     fun get(id: Long): Flowable<StepImpl>
 
     @Insert
-    fun insert(stepImpl: StepImpl)
+    fun insert(stepImpl: StepImpl): Long
 
     @Delete
     fun delete(stepImpl: StepImpl)
