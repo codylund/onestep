@@ -69,8 +69,9 @@ class PathActivity : AppCompatActivity() {
 
                 })
 
-                // Display live path list in recycler view with list adapter
                 viewAdapter = StepAdapter()
+
+                // Display live path list in recycler view with list adapter
                 recyclerView = this.steps.apply {
                     // Prevent resizing after adapter updates
                     setHasFixedSize(true)
@@ -80,6 +81,7 @@ class PathActivity : AppCompatActivity() {
 
                     adapter = viewAdapter
                 }
+
 
                 // Fetch steps for the path
                 pathFinder.getSteps(pathId).subscribe(object: ObserverAdapter<List<Step>> {
