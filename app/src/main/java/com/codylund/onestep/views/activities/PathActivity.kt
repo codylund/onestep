@@ -8,16 +8,12 @@ import android.support.v7.widget.RecyclerView
 import android.support.v7.widget.helper.ItemTouchHelper
 import android.view.View
 import android.widget.Toast
-import com.codylund.onestep.ItemDragSwapStrategy
 import com.codylund.onestep.viewmodels.PathViewModelImpl
 import com.codylund.onestep.models.Path
 import com.codylund.onestep.R
 import com.codylund.onestep.models.ObserverAdapter
 import com.codylund.onestep.models.Step
-import com.codylund.onestep.views.ItemDragHelperCallback
-import com.codylund.onestep.views.adapters.PathAdapter
 import com.codylund.onestep.views.adapters.StepAdapter
-import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.activity_path.*
 import java.util.logging.Logger
 
@@ -97,35 +93,22 @@ class PathActivity : AppCompatActivity() {
             }
         }
 
-//        steps.addOnScrollListener(object: RecyclerView.OnScrollListener() {
-//            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
-//                super.onScrolled(recyclerView, dx, dy)
-//                if (dy > 0 && addPathButton.visibility == View.VISIBLE) {
-//                    addPathButton.hide()
-//                } else if (dy < 0 && addPathButton.visibility != View.VISIBLE) {
-//                    addPathButton.show()
-//                }
-//            }
-//        })
-//
+        recyclerView.addOnScrollListener(object: RecyclerView.OnScrollListener() {
+            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                super.onScrolled(recyclerView, dx, dy)
+                if (dy > 0 && addPathButton.visibility == View.VISIBLE) {
+                    addPathButton.hide()
+                } else if (dy < 0 && addPathButton.visibility != View.VISIBLE) {
+                    addPathButton.show()
+                }
+            }
+        })
+
         addPathButton.setOnClickListener {
             val pathId = intent.getLongExtra(KEY_PATH_ID, INVALID_PATH_ID)
             var intent = Intent(this, NewStepActivity::class.java)
             intent.putExtra(NewStepActivity.KEY_PATH_ID, pathId)
             startActivity(intent)
         }
-//
-//        mItemTouchHelper = ItemTouchHelper(ItemDragHelperCallback(object: ItemDragSwapStrategy<StepAdapter.StepViewHolder> {
-//
-//            override fun swap(firstItem: StepAdapter.StepViewHolder, secondItem: StepAdapter.StepViewHolder) {
-//                // pathFinder.swapSteps(firstItem.stepData, secondItem.stepData)
-//            }
-//
-//            override fun complete() {
-//                // TODO update the the database with the swap
-//            }
-//
-//        }))
-//        mItemTouchHelper.attachToRecyclerView(steps)
     }
 }

@@ -1,8 +1,8 @@
-package com.codylund.onestep
+package com.codylund.onestep.views
 
 import android.support.v7.widget.RecyclerView
 
 interface ItemDragSwapStrategy<T: RecyclerView.ViewHolder> {
-    fun swap(firstItem: T, secondItem: T)
+    fun start()
     fun complete()
 }
