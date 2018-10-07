@@ -3,6 +3,7 @@ package com.codylund.onestep.views
 import android.animation.AnimatorSet
 import android.animation.ObjectAnimator
 import android.view.View
+import java.time.Duration
 
 object Animations {
     /**
@@ -33,7 +34,11 @@ object Animations {
     /**
      * Fade the view to the target alpha with the given delay.
      */
-    fun fadeWithDelay(view: View, delay: Long, alpha: Float) {
-        view.animate().setStartDelay(delay).alpha(alpha).start()
+    fun fadeWithDelay(view: View, delay: Long, duration: Long = 300, alpha: Float) {
+        view.animate()
+                .setStartDelay(delay)
+                .setDuration(duration)
+                .alpha(alpha)
+                .start()
     }
 }

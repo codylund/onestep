@@ -9,6 +9,7 @@ class ItemDragHelperCallback<T: RecyclerView.ViewHolder>(val strategy: ItemDragS
     private val LOGGER = Logger.getLogger(ItemDragHelperCallback::class.java.name)
 
     private var mLastActionState: Int = ItemTouchHelper.ACTION_STATE_IDLE
+    private var mDraggingViewHolder: RecyclerView.ViewHolder? = null
 
     override fun isLongPressDragEnabled() = true
     override fun isItemViewSwipeEnabled() = false
@@ -19,7 +20,6 @@ class ItemDragHelperCallback<T: RecyclerView.ViewHolder>(val strategy: ItemDragS
 
     override fun onMove(p0: RecyclerView, viewHolder: RecyclerView.ViewHolder, target: RecyclerView.ViewHolder): Boolean {
         p0.adapter!!.notifyItemMoved(viewHolder.adapterPosition, target.adapterPosition)
-
         return true
     }
 
@@ -28,15 +28,14 @@ class ItemDragHelperCallback<T: RecyclerView.ViewHolder>(val strategy: ItemDragS
         when (actionState) {
             ItemTouchHelper.ACTION_STATE_DRAG -> {
                 viewHolder?.let {
-                    mLastActionState = ItemTouchHelper.ACTION_STATE_DRAG
-                    strategy.start()
+                    mDraggingViewHolder = it
+                    strategy.start(it.adapterPosition)
                 }
             }
             ItemTouchHelper.ACTION_STATE_IDLE -> {
-                LOGGER.info("Idle")
-                if (mLastActionState == ItemTouchHelper.ACTION_STATE_DRAG) {
-                    mLastActionState = ItemTouchHelper.ACTION_STATE_IDLE
-                    strategy.complete()
+                mDraggingViewHolder?.let{
+                    strategy.complete(it.adapterPosition)
+                    mDraggingViewHolder = null
                 }
             }
             else -> {

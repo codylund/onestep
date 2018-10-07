@@ -7,11 +7,15 @@ import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.widget.Toast
 import com.codylund.onestep.*
+import com.codylund.onestep.models.ObservableAdapter
 import com.codylund.onestep.models.ObserverAdapter
 import com.codylund.onestep.models.Path
 import com.codylund.onestep.viewmodels.PathViewModelImpl
 import com.codylund.onestep.views.MainView
 import com.codylund.onestep.views.adapters.PathAdapter
+import io.reactivex.CompletableObserver
+import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.disposables.Disposable
 import io.reactivex.observers.DisposableCompletableObserver
 import kotlinx.android.synthetic.main.activity_main.*
 import java.util.logging.Logger
@@ -20,7 +24,10 @@ class MainActivity : AppCompatActivity(), MainView, ObserverAdapter<List<Path>> 
 
     private val LOGGER = Logger.getLogger(MainActivity::javaClass.name)
 
+    private val mCompositeDisposable = CompositeDisposable()
+
     private lateinit var pathFinder: PathViewModelImpl
+    private lateinit var pathListObservable: ObservableAdapter<List<Path>>
 
     // Path view display stuff
     private lateinit var recyclerView: RecyclerView
@@ -63,16 +70,24 @@ class MainActivity : AppCompatActivity(), MainView, ObserverAdapter<List<Path>> 
      */
     override fun delete(path: Path) {
         pathFinder.delete(path)
-            .subscribeWith(object: DisposableCompletableObserver() {
-                override fun onComplete() {
-                    println("Deleted step.")
-                }
+        .subscribe(object: CompletableObserver {
+            override fun onSubscribe(d: Disposable) {
+                mCompositeDisposable.add(d)
+            }
 
-                override fun onError(e: Throwable) {
-                    println("Failed to delete path: ${e.localizedMessage}")
-                    Toast.makeText(applicationContext, "Failed to delete path.", Toast.LENGTH_LONG).show()
-                }
-            })
+            override fun onComplete() {
+                println("Deleted step.")
+            }
+
+            override fun onError(e: Throwable) {
+                println("Failed to delete path: ${e.localizedMessage}")
+                Toast.makeText(applicationContext, "Failed to delete path.", Toast.LENGTH_LONG).show()
+            }
+        })
+    }
+
+    override fun onSubscribe(observable: ObservableAdapter<List<Path>>) {
+        pathListObservable = observable
     }
 
     /**
@@ -97,5 +112,11 @@ class MainActivity : AppCompatActivity(), MainView, ObserverAdapter<List<Path>> 
         var intent = Intent(this, PathActivity::class.java)
         intent.putExtra(PathActivity.KEY_PATH_ID, path.getIdentifier())
         startActivity(intent)
+    }
+
+    override fun finish() {
+        super.finish()
+        pathListObservable?.unsubscribe()
+        mCompositeDisposable?.dispose()
     }
 }

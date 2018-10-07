@@ -6,13 +6,15 @@ import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.support.v7.widget.helper.ItemTouchHelper
-import android.view.View
 import android.widget.Toast
 import com.codylund.onestep.viewmodels.PathViewModelImpl
 import com.codylund.onestep.models.Path
 import com.codylund.onestep.R
+import com.codylund.onestep.models.ObservableAdapter
 import com.codylund.onestep.models.ObserverAdapter
 import com.codylund.onestep.models.Step
+import com.codylund.onestep.utils.StepUtils
+import com.codylund.onestep.viewmodels.StepViewModelImpl
 import com.codylund.onestep.views.adapters.StepAdapter
 import kotlinx.android.synthetic.main.activity_path.*
 import java.util.logging.Logger
@@ -30,6 +32,8 @@ class PathActivity : AppCompatActivity() {
     private val INVALID_PATH_ID: Long = -1
 
     private lateinit var pathFinder: PathViewModelImpl
+    private var pathObservable: ObservableAdapter<Path>? = null
+    private var stepListObservable: ObservableAdapter<List<Step>>? = null
 
     // Path view display stuff
     private lateinit var recyclerView: RecyclerView
@@ -51,6 +55,9 @@ class PathActivity : AppCompatActivity() {
 
                 // Fetch the path data
                 pathFinder.getPath(pathId).subscribe(object: ObserverAdapter<Path> {
+                    override fun onSubscribe(observable: ObservableAdapter<Path>) {
+                        pathObservable = observable
+                    }
 
                     override fun onSuccess(result: Path) {
                         println(result.toString())
@@ -65,7 +72,7 @@ class PathActivity : AppCompatActivity() {
 
                 })
 
-                viewAdapter = StepAdapter()
+                viewAdapter = StepAdapter(StepViewModelImpl(this))
 
                 // Display live path list in recycler view with list adapter
                 recyclerView = this.steps.apply {
@@ -81,34 +88,32 @@ class PathActivity : AppCompatActivity() {
 
                 // Fetch steps for the path
                 pathFinder.getSteps(pathId).subscribe(object: ObserverAdapter<List<Step>> {
+                    override fun onSubscribe(disposable: ObservableAdapter<List<Step>>) {
+                        stepListObservable = disposable
+                    }
+
                     override fun onSuccess(result: List<Step>) {
-                        viewAdapter.submitList(result)
+                        viewAdapter.submitList(StepUtils.orderSteps(result))
                     }
 
                     override fun onFailure(throwable: Throwable) {
                         LOGGER.severe("Failed to update step list: " + throwable.localizedMessage)
                     }
-
                 })
             }
         }
 
-        recyclerView.addOnScrollListener(object: RecyclerView.OnScrollListener() {
-            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
-                super.onScrolled(recyclerView, dx, dy)
-                if (dy > 0 && addPathButton.visibility == View.VISIBLE) {
-                    addPathButton.hide()
-                } else if (dy < 0 && addPathButton.visibility != View.VISIBLE) {
-                    addPathButton.show()
-                }
-            }
-        })
-
         addPathButton.setOnClickListener {
             val pathId = intent.getLongExtra(KEY_PATH_ID, INVALID_PATH_ID)
-            var intent = Intent(this, NewStepActivity::class.java)
+            val intent = Intent(this, NewStepActivity::class.java)
             intent.putExtra(NewStepActivity.KEY_PATH_ID, pathId)
             startActivity(intent)
         }
+    }
+
+    override fun finish() {
+        super.finish()
+        pathObservable?.unsubscribe()
+        stepListObservable?.unsubscribe()
     }
 }

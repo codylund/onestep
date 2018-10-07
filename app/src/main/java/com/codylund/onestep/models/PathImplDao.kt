@@ -12,6 +12,9 @@ interface PathImplDao {
     @Query("SELECT * from pathData WHERE mPathId=:id")
     fun get(id: Long): Flowable<PathImpl>
 
+    @Query("SELECT * from pathData WHERE mPathId=:id")
+    fun getSync(id: Long): PathImpl
+
     @Insert
     fun insert(pathImpl: PathImpl): Long
 

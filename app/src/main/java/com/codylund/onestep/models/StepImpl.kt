@@ -18,7 +18,6 @@ data class StepImpl (
 
     @PrimaryKey(autoGenerate = true) var mStepId: Long = 0
     @ColumnInfo(name = "pathId") var mPathId: Long? = null
-    @ColumnInfo(name = "lastStep") var mLastStepId: Long? = null
     @ColumnInfo(name = "nextStep") var mNextStepId: Long? = null
     @ColumnInfo(name = "status") var mStatus: StepStatus = StepStatus.NEW
 
@@ -57,9 +56,17 @@ data class StepImpl (
         mStatus = status
     }
 
+    override fun setNextStep(step: Step?) {
+        mNextStepId = step?.getIdentifier()
+    }
+
     @Ignore
     override fun getIdentifier(): Long {
         return mStepId
+    }
+
+    override fun getNextStepIdentifier(): Long? {
+        return mNextStepId
     }
 
     @Ignore
@@ -103,17 +110,15 @@ data class StepImpl (
             return false
 
         // Check all the members
-        return !(mStepId != other.mStepId
-            || mPathId != other.mPathId
-            || mLastStepId != other.mLastStepId
-            || mNextStepId != other.mNextStepId
-            || mStatus != other.mStatus
-            || mWho != other.mWho
-            || mWhat != other.mWhat
-            || mWhy != other.mWhy
-            || mWhen != other.mWhen
-            || mWhere != other.mWhere
-            || mHow != other.mHow)
+        return mStepId == other.mStepId
+                && mPathId == other.mPathId
+                && mStatus == other.mStatus
+                && mWho == other.mWho
+                && mWhat == other.mWhat
+                && mWhy == other.mWhy
+                && mWhen == other.mWhen
+                && mWhere == other.mWhere
+                && mHow == other.mHow
     }
 
     override fun sameAs(other: Differ.Diffable): Boolean {

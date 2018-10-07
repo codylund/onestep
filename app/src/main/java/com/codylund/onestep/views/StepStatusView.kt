@@ -20,6 +20,7 @@ class StepStatusView(context: Context, attrs: AttributeSet?) : ImageView(context
             StepStatus.NEW -> setStatus(StepStatus.DONE)
             StepStatus.DONE -> setStatus(StepStatus.NEW)
         }
+        Animations.clickStepStatus(this)
     }
 
     fun getResourceId(status: StepStatus): Int {

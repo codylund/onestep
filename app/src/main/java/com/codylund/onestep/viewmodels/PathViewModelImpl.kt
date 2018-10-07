@@ -1,12 +1,16 @@
 package com.codylund.onestep.viewmodels
 
 import android.content.Context
+import android.util.Log
 import com.codylund.onestep.models.*
 import io.reactivex.*
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
+import java.util.logging.Logger
 
 class PathViewModelImpl(val context: Context) : PathViewModel {
+
+    private val LOGGER = Logger.getLogger(PathViewModelImpl::class.java.name)
 
     val mStepDataBase = StepDataBase.getInstance(context)!!.stepDataDao()
     val mPathDataBase = PathDataBase.getInstance(context)!!.pathDataDao()
@@ -35,6 +39,7 @@ class PathViewModelImpl(val context: Context) : PathViewModel {
     fun makePath(name: String, description: String): Single<Long> {
         return Single.create { it: SingleEmitter<Long> ->
             var path = PathImpl(name, description)
+
             val id = mPathDataBase.insert(path)
             it.onSuccess(id)
         }.subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread())
@@ -44,40 +49,26 @@ class PathViewModelImpl(val context: Context) : PathViewModel {
             : Completable {
 
         return Completable.create {
-            var step = StepImpl(who, what, wen, where, why, how)
-            step.mPathId = pathId
-
             // Get the current last step in the path
             val lastStep = mStepDataBase.getLastStep(pathId)
 
+            var step = StepImpl(who, what, wen, where, why, how)
+            step.mPathId = pathId
+            step.mNextStepId = null
+
             // Update the new step with the last step's id
-            step.mLastStepId = lastStep?.mStepId
             val id = mStepDataBase.insert(step)
+            LOGGER.info("Added step with id=$id to path with id=$pathId")
 
             // Update the previous step
-            if (lastStep != null) {
-                lastStep.mNextStepId = id
-                mStepDataBase.update(lastStep)
+            lastStep?.let {
+                LOGGER.info("Step with id=${it.mStepId} leads to step with id=$id ")
+                it.mNextStepId = id
+                mStepDataBase.update(it)
             }
 
             it.onComplete()
         }.subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread())
-    }
-
-    fun takeStep(from: Step, to: Step) {
-        checkType(from, to)
-        val fromImpl = from as StepImpl
-        val toImpl = to as StepImpl
-        fromImpl.mNextStepId = toImpl.mStepId
-        toImpl.mLastStepId = fromImpl.mStepId
-        mStepDataBase?.update(from)
-        mStepDataBase?.update(to)
-    }
-
-    private fun checkType(vararg steps: Step) {
-        for (step in steps)
-            if (step !is StepImpl)
-                throw IllegalArgumentException(step.toString())
     }
 
     fun delete(path: Path) : Completable {
