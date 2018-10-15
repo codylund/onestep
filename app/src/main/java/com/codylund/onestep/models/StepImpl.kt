@@ -112,6 +112,7 @@ data class StepImpl (
         // Check all the members
         return mStepId == other.mStepId
                 && mPathId == other.mPathId
+                && mNextStepId == other.mNextStepId
                 && mStatus == other.mStatus
                 && mWho == other.mWho
                 && mWhat == other.mWhat

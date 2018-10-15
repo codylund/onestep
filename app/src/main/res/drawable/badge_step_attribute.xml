@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:state_enabled="true">
+        <layer-list>
+            <item>
+                <shape android:shape="oval">
+                    <solid android:color="@color/colorPrimary" />
+                    <size android:height="40dp" android:width="40dp" />
+                </shape>
+            </item>
+            <item>
+                <shape android:shape="oval"
+                    android:innerRadius="0dp"
+                    android:thickness="55dp"
+                    android:useLevel="false">
+                    <solid android:color="@android:color/transparent"/>
+                    <size android:height="46dp"
+                        android:width="46dp"/>
+                    <stroke android:color="@android:color/white" android:width="1dp"/>                </shape>
+            </item>
+            <item
+                android:id="@+id/icon"
+                android:drawable="@drawable/ic_today_black_24dp"
+                android:height="24dp"
+                android:width="24dp"
+                android:gravity="center">
+            </item>
+        </layer-list>
+
+    </item>
+
+</selector>

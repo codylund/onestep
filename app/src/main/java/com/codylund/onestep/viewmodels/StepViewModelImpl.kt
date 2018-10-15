@@ -23,6 +23,9 @@ class StepViewModelImpl(context: Context) : StepViewModel {
 
     override fun updateSteps(steps: List<Step>) {
         val stepImpls = steps.filterIsInstance<StepImpl>()
+        stepImpls.map { it.getIdentifier() }.let {
+            LOGGER.info("Updating steps with ids $it")
+        }
         Completable.create {
             mStepDataBase.updateSteps(stepImpls)
             it.onComplete()

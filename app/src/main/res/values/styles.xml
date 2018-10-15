@@ -9,25 +9,8 @@
         <item name="colorAccent">@color/colorAccent</item>
 
         <!-- enable window content slide_out -->
-        <item name="android:windowActivityTransitions">true</item>
-        <item name="android:windowContentTransitions">true</item>
-
-        <item name="android:windowAnimationStyle">@style/WindowStyleAnimation</item>
+        <item name="actionMenuTextColor">@android:color/white</item>
         
-    </style>
-
-    <style name="WindowStyleAnimation">
-        <!-- specify enter and exit slide_out -->
-        <item name="android:windowReenterTransition">@null</item>
-        <item name="android:windowEnterAnimation">@anim/slide_in</item>
-        <item name="android:windowExitAnimation">@anim/slide_out</item>
-    </style>
-
-
-    <style name="FullScreenDialogStyle" parent="Theme.AppCompat.Light.NoActionBar">
-        <item name="android:windowNoTitle">true</item>
-        <item name="android:windowFullscreen">true</item>
-        <item name="android:windowIsFloating">false</item>
     </style>
 
 </resources>

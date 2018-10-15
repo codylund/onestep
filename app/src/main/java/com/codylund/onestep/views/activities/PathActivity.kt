@@ -23,13 +23,10 @@ class PathActivity : AppCompatActivity() {
 
     private val LOGGER = Logger.getLogger(PathActivity::class.java.name)
 
-    private lateinit var mItemTouchHelper: ItemTouchHelper
-
     companion object {
         val KEY_PATH_ID = "PathActivity.PATH_ID"
+        val INVALID_PATH_ID: Long = -1
     }
-
-    private val INVALID_PATH_ID: Long = -1
 
     private lateinit var pathFinder: PathViewModelImpl
     private var pathObservable: ObservableAdapter<Path>? = null
@@ -103,12 +100,14 @@ class PathActivity : AppCompatActivity() {
             }
         }
 
-        addPathButton.setOnClickListener {
-            val pathId = intent.getLongExtra(KEY_PATH_ID, INVALID_PATH_ID)
-            val intent = Intent(this, NewStepActivity::class.java)
-            intent.putExtra(NewStepActivity.KEY_PATH_ID, pathId)
-            startActivity(intent)
-        }
+        addPathButton.setOnClickListener { startNewPathActivity() }
+    }
+
+    private fun startNewPathActivity() {
+        val pathId = intent.getLongExtra(KEY_PATH_ID, INVALID_PATH_ID)
+        val intent = Intent(this, NewStepActivity::class.java)
+        intent.putExtra(NewStepActivity.KEY_PATH_ID, pathId)
+        startActivity(intent)
     }
 
     override fun finish() {
