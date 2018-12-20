@@ -87,56 +87,34 @@ class StepAdapterCache(val mStepViewModel: StepViewModel) : ListUpdateCallback {
     override fun onMoved(fromPostion: Int, toPosition: Int) {
         LOGGER.info("Step moved: position $fromPostion to position $toPosition.")
 
-        // Track the steps that need to be updated in persistent memory
-        val updateList = mutableListOf<Step>()
-
         // Reorder the steps
-        mStepOrder.removeAt(fromPostion).let {
-            mStepOrder.add(toPosition, it)
-        }
+        val id = mStepOrder.removeAt(fromPostion)
+        mStepOrder.add(toPosition, id)
 
-        // Update the steps surround the original position of the moved item
-        getLastAndNextStep(fromPostion) { lastStep, nextStep ->
-            StepUtils.connectSteps(lastStep, nextStep)?.let {
-                updateList.add(it)
-            }
-        }
+        // Update the
+        var updateList = mutableListOf<Int>()
+                .apply {
+                    // the step behind the moved step
+                    add(toPosition-1)
+                    // the moved step
+                    add(toPosition)
+                    // the step behind the moved step's original position
+                    add(fromPostion - if (toPosition > fromPostion) 1 else 0)
+                }.filter {
+                    it >= 0
+                }.map {
+                    var fromId = mStepOrder[it]
+                    var toId = if (it + 1 < mStepOrder.size) mStepOrder[it + 1] else null
 
-        // Update the moved step and the steps surrounding the new position
-        getItemAt(toPosition).let { movedStep ->
-            getLastAndNextStep(toPosition) { lastStep, nextStep ->
-                // Previous step
-                lastStep?.let {
-                    if (it.getNextStepIdentifier() != movedStep.getIdentifier()) {
-                        StepUtils.connectSteps(lastStep, movedStep)?.let {
-                            updateList.add(it)
-                        }
+                    mStepCache[fromId]!!.apply {
+                        setNextStep(if (toId == null) null else mStepCache[toId])
                     }
                 }
 
-                // Moved step
-                if (movedStep.getNextStepIdentifier() != nextStep?.getIdentifier()) {
-                    StepUtils.connectSteps(movedStep, nextStep)?.let{
-                        updateList.add(it)
-                    }
-                }
-            }
-        }
+        updateLines()
 
         if (updateList.isNotEmpty())
             mStepViewModel.updateSteps(updateList)
-
-        updateLines()
-    }
-
-    /**
-     * Return the steps surrounding the provided position via the callback.
-     */
-    private fun getLastAndNextStep(position: Int, callback: (Step?, Step?) -> Unit) {
-        var lastStep = if (position > 0) getItemAt(position - 1) else null
-        var nextStep = if (position < getSize() - 1) getItemAt(position + 1) else null
-        println("lastStep=${lastStep?.getIdentifier()}, nextStep=${nextStep?.getIdentifier()}")
-        callback(lastStep, nextStep)
     }
 
     /**
